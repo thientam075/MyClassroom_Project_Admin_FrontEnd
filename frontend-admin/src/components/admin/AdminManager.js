@@ -11,60 +11,17 @@ import {
   Button,
   Container,
 } from "@mui/material";
+import Moment from 'react-moment';
+import 'moment-timezone';
 import DetailAdmin from "./detailAdmin";
 import { Redirect } from "react-router-dom";
 import ModalAdd from "./ModalAdd";
-function createData(id, email, role, fullname, createdAt, amout) {
-  return { id, email, role, fullname, createdAt, amout };
-}
-
-const rows = [
-  createData(
-    0,
-    "16 Mar, 2019",
-    "Elvis Presley",
-    "Tupelo, MS",
-    "VISA ⠀•••• 3719",
-    312.44
-  ),
-  createData(
-    1,
-    "16 Mar, 2019",
-    "Paul McCartney",
-    "London, UK",
-    "VISA ⠀•••• 2574",
-    866.99
-  ),
-  createData(
-    2,
-    "16 Mar, 2019",
-    "Tom Scholz",
-    "Boston, MA",
-    "MC ⠀•••• 1253",
-    100.81
-  ),
-  createData(
-    3,
-    "16 Mar, 2019",
-    "Michael Jackson",
-    "Gary, IN",
-    "AMEX ⠀•••• 2000",
-    654.39
-  ),
-  createData(
-    4,
-    "15 Mar, 2019",
-    "Bruce Springsteen",
-    "Long Branch, NJ",
-    "VISA ⠀•••• 5919",
-    212.79
-  ),
-];
 
 export default function AdminManager() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [listAdmin, setListAdmin] = useState([]);
+  const [sortList, setSortList] = useState(false);
   const takeToken = () => {
     let token = "";
     if (localStorage.getItem("token")) {
@@ -74,9 +31,9 @@ export default function AdminManager() {
     return token;
   };
 
-  const fetchCreateAdmin = (email, password, fullname ) => {
+  const fetchCreateAdmin = async (email, password, fullname ) => {
     const token = takeToken();
-    fetch(process.env.REACT_APP_API + "/auth/create", {
+    await fetch(process.env.REACT_APP_API + "/auth/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,6 +54,48 @@ export default function AdminManager() {
       }
     });
   };
+  const SortTime = () => {
+    if(listAdmin.length === 0){
+      return;
+    }
+    if(sortList){
+      listAdmin.sort((a,b) => {
+        return a.createdAt - b.createdAt;
+      })
+    }else{
+      listAdmin.sort((a,b) => {
+        return b.createdAt - a.createdAt;
+      })
+    }
+    setSortList(!sortList);
+    setIsLoaded(!isLoaded);
+    
+  }
+  const fetchDataAdmin = async () => {
+    const token = takeToken();
+
+    await fetch(process.env.REACT_APP_API + "/admin/listAdmin", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    }).then((res) => {
+      if (!res.ok) {
+        setError(true);
+      } else {
+        res.json().then((result) => {
+          if (result) {
+            setListAdmin(result.data);
+            setIsLoaded(true);
+            
+          }
+        });
+      }
+    });
+  }
+  useEffect(() => {
+    fetchDataAdmin();
+  }, [isLoaded]) 
   return (
     <>
       {error ? (
@@ -129,17 +128,23 @@ export default function AdminManager() {
                   <TableCell>Thứ tự</TableCell>
                   <TableCell>Tên đầy đủ</TableCell>
                   <TableCell>Email</TableCell>
-                  <TableCell>Thời gian tạo</TableCell>
+                  <TableCell>
+                  <Box sx = {{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+                    Thời gian tạo
+                  <Button onClick = {SortTime}>Sắp xếp</Button>
+                  </Box>
+                  </TableCell>
                   <TableCell align="right"></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
+                { listAdmin ? 
+                  listAdmin.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell>{row.id}</TableCell>
                     <TableCell>{row.fullname}</TableCell>
                     <TableCell>{row.email}</TableCell>
-                    <TableCell>{row.email}</TableCell>
+                    <TableCell><Moment>{row.createdAt}</Moment></TableCell>
                     <TableCell align="right">
                       <DetailAdmin
                         email={row.email}
@@ -149,7 +154,7 @@ export default function AdminManager() {
                       />
                     </TableCell>
                   </TableRow>
-                ))}
+                )) : <>Loading.....</>}
               </TableBody>
             </Table>
           </Container>

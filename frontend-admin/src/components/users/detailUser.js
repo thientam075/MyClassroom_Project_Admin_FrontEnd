@@ -21,7 +21,7 @@ const style = {
   pb: 3,
 };
 
-export default function DetailAdmin({email, role, fullname, createdAt}) {
+export default function DetailUser({email, authType, fullname,IDStudent}) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(true);
@@ -43,10 +43,9 @@ export default function DetailAdmin({email, role, fullname, createdAt}) {
           <h2 id="parent-modal-title">Họ và tên: {fullname}</h2>
           <h2 id="parent-modal-title">Email: {email}</h2>
           <p id="parent-modal-description">
-            Với vai trò {role === 1 ? 'Super Admin' : 'Admin'} 
+            Đăng nhập bằng {authType === 'local' ? 'Email và Password' : 'Google'} 
             <br/>
-            Được tạo lúc 
-            <Moment>{createdAt}</Moment>
+            MSSV: {IDStudent ? IDStudent : 'Chưa cập nhật'}
           </p>
         </Box>
       </Modal>
