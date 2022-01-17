@@ -1,20 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter as Router, Route} from 'react-router-dom'
+import { BrowserRouter as Router, Route} from 'react-router-dom';
+import { ToastProvider, useToasts } from 'react-toast-notifications';
+import AdminManager from './components/admin/AdminManager';
+import LoginPage from './components/auth/LoginPage';
+import ListUsers from './components/users/listUsers';
+import ListClasses from './components/class/listClasses';
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
+  
+  <ToastProvider>
     <Router>
-    <Route exact path="/admin" component={AdminManager}></Route>
+    <Route exact path="/" component={AdminManager}></Route>
+    <Route path="/login" component={LoginPage}></Route>
+    <Route path="/listUsers" component={ListUsers}></Route>
+    <Route path="/listClasses" component={ListClasses}></Route>
   </Router>
-  </React.StrictMode>,
+  </ToastProvider>,
   document.getElementById('root')
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
