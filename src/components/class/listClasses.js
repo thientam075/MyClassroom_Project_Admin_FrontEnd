@@ -81,11 +81,9 @@ export default function ListClasses() {
     let listUs = ListUserFilter;
     listUs = listUs.filter((Us) => {
       return (
-        Us.fullname.toLowerCase().search(keyWords.toLowerCase()) !== -1 ||
-        Us.email.toLowerCase().search(keyWords.toLowerCase()) !== -1
+        Us.name.toLowerCase().search(keyWords.toLowerCase()) !== -1
       );
     });
-    console.log(listUs);
     setListUserFilter(listUs);
   };
   useEffect(() => {
@@ -126,8 +124,8 @@ export default function ListClasses() {
             >
               <InputBase
                 sx={{ ml: 1, flex: 1 }}
-                placeholder="Tìm kiếm người dùng"
-                inputProps={{ "aria-label": "Tìm kiếm người dùng" }}
+                placeholder="Tìm kiếm lớp học"
+                inputProps={{ "aria-label": "Tìm kiếm lớp học" }}
                 value = {keyWords}
                 onChange={(e) => setKeyWords(e.target.value)}
               />
@@ -141,8 +139,8 @@ export default function ListClasses() {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>Tên</TableCell>
-                  <TableCell>Môn học</TableCell>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Tên lớp</TableCell>
                   <TableCell>
                     <Box
                       sx={{
@@ -169,7 +167,6 @@ export default function ListClasses() {
                       </TableCell>
                       <TableCell align="right">
                         <DetailClass
-                          
                           
                           fullname={row.name}
                          subject={row.subject}

@@ -118,7 +118,7 @@ export default function AdminManager() {
         Ad.email.toLowerCase().search(keyWords.toLowerCase()) !== -1
       );
     });
-    console.log(listAd);
+    
     setListAdminFilter(listAd);
   };
   const ResetList = () => {
@@ -181,7 +181,7 @@ export default function AdminManager() {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>Thứ tự</TableCell>
+                  <TableCell>ID</TableCell>
                   <TableCell>Tên đầy đủ</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>
