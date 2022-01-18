@@ -174,9 +174,7 @@ export default function ListClasses() {
                       <TableCell>{row.id}</TableCell>
                       <TableCell>{row.name}</TableCell>
                       <TableCell>
-                        <Moment parse="YYYY-MM-DD HH:mm">
-                          {row.createdAt}
-                        </Moment>
+                      {new Date(row.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell align="right">
                         <DetailClass
@@ -184,6 +182,7 @@ export default function ListClasses() {
                           
                           fullname={row.name}
                          subject={row.subject}
+                         createdAt={new Date(row.createdAt).toLocaleDateString()}
                         />
                       </TableCell>
                     </TableRow>
