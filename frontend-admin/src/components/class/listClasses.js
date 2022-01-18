@@ -81,7 +81,25 @@ export default function ListClasses() {
       }
     });
   };
-
+  const ResetList = () => {
+    setKeyWords("");
+    setIsLoaded(!isLoaded);
+  };
+  const onSearch = (e) => {
+    e.preventDefault();
+    let listUs = ListUserFilter;
+    listUs = listUs.filter((Us) => {
+      return (
+        Us.fullname.toLowerCase().search(keyWords.toLowerCase()) !== -1 ||
+        Us.email.toLowerCase().search(keyWords.toLowerCase()) !== -1
+      );
+    });
+    console.log(listUs);
+    setListUserFilter(listUs);
+  };
+  useEffect(() => {
+    fetchDataUser();
+  }, [isLoaded]);
   return (
     <>
       {error ? (
