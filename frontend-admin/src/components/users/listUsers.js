@@ -20,6 +20,8 @@ import "moment-timezone";
 import DetailUser from "./detailUser";
 import { Redirect } from "react-router-dom";
 import moment from "moment";
+import { useToasts } from "react-toast-notifications";
+import UpdateStudentIdDialog from "./updateStudentIdDialog";
 
 export default function ListUsers() {
   const [error, setError] = useState(null);
@@ -27,6 +29,69 @@ export default function ListUsers() {
   const [ListUserFilter, setListUserFilter] = useState([]);
   const [sortList, setSortList] = useState(false);
   const [keyWords, setKeyWords] = useState("");
+
+  const [isOpenedDialog, setIsOpenedDialog] = useState(false);
+  const [idUser, setIdUser] = useState(null);
+  const [idStudent, setIdStudent] = useState(null);
+
+  const { addToast } = useToasts();
+
+  const closeDialog = () => {
+    setIdStudent(null);
+    setIdUser(null);
+    setIsOpenedDialog(false);
+  }
+
+  const openDialog = () => {
+    setIsOpenedDialog(true);
+  }
+
+  const updateStudentId = (studentId) => {
+    const token = takeToken();
+
+    fetch(process.env.REACT_APP_API + "/admin/updateStudentId", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        id: idUser,
+        studentId: studentId,
+      }),
+    }).then((res) => {
+      if (!res.ok) {
+        setError(true);
+      } else {
+        res.json().then((result) => {
+          if (result.result === 0) {
+            addToast("Đã tồn tạo sinh viên có mã số vừa nhập.", {
+              appearance: "error",
+              autoDismiss: true,
+            });
+            closeDialog();
+          }else {
+            if(result.result === -1) {
+              addToast("Đã xảy ra lỗi.", {
+                appearance: "error",
+                autoDismiss: true,
+              });
+              closeDialog();
+            }
+            else {
+              addToast("Cập nhật thành công.", {
+                appearance: "success",
+                autoDismiss: true,
+              });
+              closeDialog();
+              setIsLoaded(false);
+            }
+          }
+        });
+      }
+    });
+  }
+
   const takeToken = () => {
     let token = "";
     if (localStorage.getItem("token")) {
@@ -216,6 +281,12 @@ export default function ListUsers() {
                           IDStudent={row.IDstudent}
                         />
                         <Button sx={{mt: 1}} variant="outlined" onClick={() => banOrUnbanUser(row.id, row.isBan)}>{row.isBan ? "Mở khóa" : "Khóa"}</Button>
+                        <br></br>
+                        <Button sx={{mt: 1}} variant="outlined" onClick={() => {
+                          setIdUser(row.id);
+                          setIdStudent(row.IDstudent === null ? "" : row.IDstudent);
+                          openDialog();
+                        }}>Cập nhật mssv</Button>
                       </TableCell>
                     </TableRow>
                   ))
@@ -225,6 +296,7 @@ export default function ListUsers() {
               </TableBody>
             </Table>
           </Container>
+          <UpdateStudentIdDialog isOpened={isOpenedDialog} close={closeDialog} update={updateStudentId} idStudent={idStudent}></UpdateStudentIdDialog>
         </>
       )}
     </>
