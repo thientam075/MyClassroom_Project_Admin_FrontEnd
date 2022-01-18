@@ -27,7 +27,61 @@ export default function ListClasses() {
   const [ListUserFilter, setListUserFilter] = useState([]);
   const [sortList, setSortList] = useState(false);
   const [keyWords, setKeyWords] = useState("");
-  
+  const takeToken = () => {
+    let token = "";
+    if (localStorage.getItem("token")) {
+      token = localStorage.getItem("token").slice(1);
+      token = token.slice(0, -1);
+    }
+    return token;
+  };
+  const SortTime = () => {
+    if (ListUserFilter.length === 0) {
+      return;
+    }
+    let listUs = ListUserFilter;
+    if (sortList) {
+      listUs.sort((a, b) => {
+        const d1 = moment(a.createdAt);
+        const d2 = moment(b.createdAt);
+
+        const result = d1.isBefore(d2) === true ? 1 : -1;
+        return result;
+      });
+    } else {
+      listUs.sort((a, b) => {
+        const d1 = moment(a.createdAt);
+        const d2 = moment(b.createdAt);
+
+        const result = d1.isAfter(d2) === true ? 1 : -1;
+        return result;
+      });
+    }
+    setListUserFilter(listUs);
+    setSortList(!sortList);
+  };
+  const fetchDataUser = async () => {
+    const token = takeToken();
+
+    await fetch(process.env.REACT_APP_API + "/admin/listAllClass", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    }).then((res) => {
+      if (!res.ok) {
+        setError(true);
+      } else {
+        res.json().then((result) => {
+          if (result) {
+            setListUserFilter(result.data);
+            setIsLoaded(true);
+          }
+        });
+      }
+    });
+  };
+
   return (
     <>
       {error ? (
