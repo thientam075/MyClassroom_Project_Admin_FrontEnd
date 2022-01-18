@@ -1,7 +1,6 @@
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { useState } from 'react';
 
-import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button } from '@mui/material';
-import { set } from 'react-hook-form';
 
 function UpdateStudentIdDialog({isOpened, close, update, idStudent}) {
   const [init, setInit] = useState(true);
@@ -39,7 +38,7 @@ function UpdateStudentIdDialog({isOpened, close, update, idStudent}) {
             setStudentId("");
             setInit(true);
           }} disabled= {!(studentId !== "")}>
-            Tạo
+            Cập nhật
           </Button>
         </DialogActions>
       </Dialog>

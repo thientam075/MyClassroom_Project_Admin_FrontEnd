@@ -1,28 +1,18 @@
-import { useState, useEffect } from "react";
-import Navbar from "./Navbar";
+import SearchIcon from "@mui/icons-material/Search";
 import {
-  Typography,
-  TableRow,
-  TableHead,
-  TableCell,
-  TableBody,
-  Table,
   Box,
   Button,
-  Container,
-  Paper,
-  IconButton,
-  InputBase,
-  Divider,
+  Container, IconButton,
+  InputBase, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-
-import Moment from "react-moment";
-import "moment-timezone";
-import DetailAdmin from "./detailAdmin";
-import { Redirect } from "react-router-dom";
-import ModalAdd from "./ModalAdd";
 import moment from "moment";
+import "moment-timezone";
+import { useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
+import DetailAdmin from "./detailAdmin";
+import ModalAdd from "./ModalAdd";
+import Navbar from "./Navbar";
+
 
 export default function AdminManager() {
   const [error, setError] = useState(null);
@@ -217,9 +207,7 @@ export default function AdminManager() {
                       <TableCell>{row.fullname}</TableCell>
                       <TableCell>{row.email}</TableCell>
                       <TableCell>
-                        <Moment parse="YYYY-MM-DD HH:mm">
-                          {row.createdAt}
-                        </Moment>
+                          {new Date(row.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell align="right">
                         <DetailAdmin

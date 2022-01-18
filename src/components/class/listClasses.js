@@ -1,97 +1,23 @@
-import { useState, useEffect } from "react";
-import Navbar from "../admin/Navbar";
+import SearchIcon from "@mui/icons-material/Search";
 import {
-  Typography,
-  TableRow,
-  TableHead,
-  TableCell,
-  TableBody,
-  Table,
   Box,
   Button,
   Container,
-  IconButton,
-  Paper,
-  InputBase
+  IconButton, InputBase, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import Moment from "react-moment";
-import "moment-timezone";
-import DetailUser from "./detailUser";
-import { Redirect } from "react-router-dom";
 import moment from "moment";
-import { useToasts } from "react-toast-notifications";
-import UpdateStudentIdDialog from "./updateStudentIdDialog";
+import "moment-timezone";
+import { useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
+import Navbar from "../admin/Navbar";
+import DetailClass from "./detailClass";
 
-export default function ListUsers() {
+export default function ListClasses() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [ListUserFilter, setListUserFilter] = useState([]);
   const [sortList, setSortList] = useState(false);
   const [keyWords, setKeyWords] = useState("");
-
-  const [isOpenedDialog, setIsOpenedDialog] = useState(false);
-  const [idUser, setIdUser] = useState(null);
-  const [idStudent, setIdStudent] = useState(null);
-
-  const { addToast } = useToasts();
-
-  const closeDialog = () => {
-    setIdStudent(null);
-    setIdUser(null);
-    setIsOpenedDialog(false);
-  }
-
-  const openDialog = () => {
-    setIsOpenedDialog(true);
-  }
-
-  const updateStudentId = (studentId) => {
-    const token = takeToken();
-
-    fetch(process.env.REACT_APP_API + "/admin/updateStudentId", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify({
-        id: idUser,
-        studentId: studentId,
-      }),
-    }).then((res) => {
-      if (!res.ok) {
-        setError(true);
-      } else {
-        res.json().then((result) => {
-          if (result.result === 0) {
-            addToast("Đã tồn tạo sinh viên có mã số vừa nhập.", {
-              appearance: "error",
-              autoDismiss: true,
-            });
-            closeDialog();
-          }else {
-            if(result.result === -1) {
-              addToast("Đã xảy ra lỗi.", {
-                appearance: "error",
-                autoDismiss: true,
-              });
-              closeDialog();
-            }
-            else {
-              addToast("Cập nhật thành công.", {
-                appearance: "success",
-                autoDismiss: true,
-              });
-              closeDialog();
-              setIsLoaded(false);
-            }
-          }
-        });
-      }
-    });
-  }
-
   const takeToken = () => {
     let token = "";
     if (localStorage.getItem("token")) {
@@ -128,7 +54,7 @@ export default function ListUsers() {
   const fetchDataUser = async () => {
     const token = takeToken();
 
-    await fetch(process.env.REACT_APP_API + "/admin/ListUser", {
+    await fetch(process.env.REACT_APP_API + "/admin/listAllClass", {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
@@ -140,6 +66,7 @@ export default function ListUsers() {
         res.json().then((result) => {
           if (result) {
             setListUserFilter(result.data);
+            setIsLoaded(true);
           }
         });
       }
@@ -161,38 +88,9 @@ export default function ListUsers() {
     console.log(listUs);
     setListUserFilter(listUs);
   };
-  
-  const banOrUnbanUser = (id, ban) => {
-    const token = takeToken();
-
-    fetch(process.env.REACT_APP_API + "/admin/banOrUnbanUser", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify({
-        id: id,
-        ban: !ban,
-      }),
-    }).then((res) => {
-      if (!res.ok) {
-        setError(true);
-      } else {
-        res.json().then((result) => {
-          if (result) {
-            setIsLoaded(false);
-          }
-        });
-      }
-    });
-  }
-  
   useEffect(() => {
     fetchDataUser();
-    setIsLoaded(true);
   }, [isLoaded]);
-
   return (
     <>
       {error ? (
@@ -243,9 +141,8 @@ export default function ListUsers() {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>Thứ tự</TableCell>
-                  <TableCell>Tên đầy đủ</TableCell>
-                  <TableCell>Email</TableCell>
+                  <TableCell>Tên</TableCell>
+                  <TableCell>Môn học</TableCell>
                   <TableCell>
                     <Box
                       sx={{
@@ -266,27 +163,18 @@ export default function ListUsers() {
                   ListUserFilter.map((row) => (
                     <TableRow key={row.id}>
                       <TableCell>{row.id}</TableCell>
-                      <TableCell>{row.fullname}</TableCell>
-                      <TableCell>{row.email}</TableCell>
+                      <TableCell>{row.name}</TableCell>
                       <TableCell>
-                        <Moment parse="YYYY-MM-DD HH:mm">
-                          {row.createdAt}
-                        </Moment>
+                      {new Date(row.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell align="right">
-                        <DetailUser
-                          email={row.email}
-                          authType={row.authType}
-                          fullname={row.fullname}
-                          IDStudent={row.IDstudent}
+                        <DetailClass
+                          
+                          
+                          fullname={row.name}
+                         subject={row.subject}
+                         createdAt={new Date(row.createdAt).toLocaleDateString()}
                         />
-                        <Button sx={{mt: 1}} variant="outlined" onClick={() => banOrUnbanUser(row.id, row.isBan)}>{row.isBan ? "Mở khóa" : "Khóa"}</Button>
-                        <br></br>
-                        <Button sx={{mt: 1}} variant="outlined" onClick={() => {
-                          setIdUser(row.id);
-                          setIdStudent(row.IDstudent === null ? "" : row.IDstudent);
-                          openDialog();
-                        }}>Cập nhật mssv</Button>
                       </TableCell>
                     </TableRow>
                   ))
@@ -296,7 +184,6 @@ export default function ListUsers() {
               </TableBody>
             </Table>
           </Container>
-          <UpdateStudentIdDialog isOpened={isOpenedDialog} close={closeDialog} update={updateStudentId} idStudent={idStudent}></UpdateStudentIdDialog>
         </>
       )}
     </>

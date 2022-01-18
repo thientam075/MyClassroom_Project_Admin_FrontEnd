@@ -1,11 +1,9 @@
 
-import {useState} from 'react';
 import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
-
-import Moment from 'react-moment';
+import Modal from '@mui/material/Modal';
 import 'moment-timezone';
+import { useState } from 'react';
 
 
 const style = {
@@ -49,7 +47,7 @@ export default function DetailAdmin({email, role, fullname, createdAt}) {
             <br/>
             Được tạo lúc 
             <br/>
-            <Moment>{createdAt}</Moment>
+            {new Date(createdAt).toLocaleDateString()}
           </p>
         </Box>
       </Modal>

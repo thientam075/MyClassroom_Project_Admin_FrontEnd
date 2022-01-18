@@ -1,15 +1,10 @@
-import { useState } from "react";
-import {
-  Box,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Menu,
-  MenuItem,
-} from "@mui/material";
-import { Link } from "react-router-dom";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import {
+  AppBar, Box, IconButton, Menu,
+  MenuItem, Toolbar, Typography
+} from "@mui/material";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const pages = [
   { name: "Danh sách Admins", link: "/" },
