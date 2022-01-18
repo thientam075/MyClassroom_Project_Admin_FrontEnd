@@ -163,7 +163,7 @@ export default function ListClasses() {
                       <TableCell>{row.id}</TableCell>
                       <TableCell>{row.name}</TableCell>
                       <TableCell>
-                      {new Date(row.createdAt).toLocaleDateString()}
+                      {new Date(row.createdAt).toLocaleDateString('en-GB')}
                       </TableCell>
                       <TableCell align="right">
                         <DetailClass

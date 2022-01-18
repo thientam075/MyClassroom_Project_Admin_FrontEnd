@@ -47,7 +47,7 @@ export default function DetailAdmin({email, role, fullname, createdAt}) {
             <br/>
             Được tạo lúc 
             <br/>
-            {new Date(createdAt).toLocaleDateString()}
+            {new Date(createdAt).toLocaleDateString('en-GB')}
           </p>
         </Box>
       </Modal>

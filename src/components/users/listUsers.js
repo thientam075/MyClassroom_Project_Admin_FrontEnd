@@ -260,7 +260,7 @@ export default function ListUsers() {
                       <TableCell>{row.fullname}</TableCell>
                       <TableCell>{row.email}</TableCell>
                       <TableCell>
-                        {new Date(row.createdAt).toLocaleDateString()}
+                        {new Date(row.createdAt).toLocaleDateString('en-GB')}
                       </TableCell>
                       <TableCell align="right">
                         <DetailUser
