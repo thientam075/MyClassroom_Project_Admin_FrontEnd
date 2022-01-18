@@ -11,16 +11,18 @@ import {
   Button,
   Container,
 } from "@mui/material";
-import Moment from 'react-moment';
-import 'moment-timezone';
+import Moment from "react-moment";
+import "moment-timezone";
 import DetailAdmin from "./detailAdmin";
 import { Redirect } from "react-router-dom";
 import ModalAdd from "./ModalAdd";
+import moment from "moment";
 
 export default function AdminManager() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [listAdmin, setListAdmin] = useState([]);
+  const [listAdminFilter, setListAdminFilter] = useState([]);
   const [sortList, setSortList] = useState(false);
   const takeToken = () => {
     let token = "";
@@ -31,7 +33,7 @@ export default function AdminManager() {
     return token;
   };
 
-  const fetchCreateAdmin = async (email, password, fullname ) => {
+  const fetchCreateAdmin = async (email, password, fullname) => {
     const token = takeToken();
     await fetch(process.env.REACT_APP_API + "/auth/create", {
       method: "POST",
@@ -55,22 +57,30 @@ export default function AdminManager() {
     });
   };
   const SortTime = () => {
-    if(listAdmin.length === 0){
+    if (listAdmin.length === 0) {
       return;
     }
-    if(sortList){
-      listAdmin.sort((a,b) => {
-        return a.createdAt - b.createdAt;
-      })
-    }else{
-      listAdmin.sort((a,b) => {
-        return b.createdAt - a.createdAt;
-      })
+    let listAd = listAdminFilter;
+    if (sortList) {
+      listAd.sort((a, b) => {
+        const d1 = moment(a.createdAt);
+        const d2 = moment(b.createdAt);
+        
+        const result = d1.isBefore(d2) === true ? 1 : -1;
+        return result;
+      });
+    } else {
+      listAd.sort((a, b) => {
+        const d1 = moment(a.createdAt);
+        const d2 = moment(b.createdAt);
+        
+        const result = d1.isAfter(d2) === true ? 1 : -1;
+        return result;
+      });
     }
+      setListAdminFilter(listAd);
     setSortList(!sortList);
-    setIsLoaded(!isLoaded);
-    
-  }
+  };
   const fetchDataAdmin = async () => {
     const token = takeToken();
 
@@ -87,15 +97,15 @@ export default function AdminManager() {
           if (result) {
             setListAdmin(result.data);
             setIsLoaded(true);
-            
+            setListAdminFilter(result.data);
           }
         });
       }
     });
-  }
+  };
   useEffect(() => {
     fetchDataAdmin();
-  }, [isLoaded]) 
+  }, [isLoaded]);
   return (
     <>
       {error ? (
@@ -119,7 +129,7 @@ export default function AdminManager() {
             >
               Danh sách các Admin
             </Typography>
-            <ModalAdd fetchCreateAdmin = {fetchCreateAdmin}/>
+            <ModalAdd fetchCreateAdmin={fetchCreateAdmin} />
           </Box>
           <Container>
             <Table size="small">
@@ -129,32 +139,45 @@ export default function AdminManager() {
                   <TableCell>Tên đầy đủ</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>
-                  <Box sx = {{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                    Thời gian tạo
-                  <Button onClick = {SortTime}>Sắp xếp</Button>
-                  </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      Thời gian tạo
+                      <Button onClick={SortTime}>Sắp xếp</Button>
+                    </Box>
                   </TableCell>
                   <TableCell align="right"></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                { listAdmin ? 
-                  listAdmin.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell>{row.id}</TableCell>
-                    <TableCell>{row.fullname}</TableCell>
-                    <TableCell>{row.email}</TableCell>
-                    <TableCell><Moment>{row.createdAt}</Moment></TableCell>
-                    <TableCell align="right">
-                      <DetailAdmin
-                        email={row.email}
-                        role={row.role}
-                        fullname={row.fullname}
-                        createdAt={row.createdAt}
-                      />
-                    </TableCell>
-                  </TableRow>
-                )) : <>Loading.....</>}
+                {listAdminFilter ? (
+                  listAdminFilter.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell>{row.id}</TableCell>
+                      <TableCell>{row.fullname}</TableCell>
+                      <TableCell>{row.email}</TableCell>
+                      <TableCell>
+                        <Moment parse="YYYY-MM-DD HH:mm">
+                          {row.createdAt}
+                        </Moment>
+                      </TableCell>
+                      <TableCell align="right">
+                        <DetailAdmin
+                          email={row.email}
+                          role={row.role}
+                          fullname={row.fullname}
+                          createdAt={row.createdAt}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <>Loading.....</>
+                )}
               </TableBody>
             </Table>
           </Container>

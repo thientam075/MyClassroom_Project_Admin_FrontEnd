@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import Moment from 'react-moment';
 import 'moment-timezone';
 
+
 const style = {
   position: 'absolute',
   top: '50%',
@@ -46,7 +47,7 @@ export default function DetailAdmin({email, role, fullname, createdAt}) {
             Với vai trò {role === 1 ? 'Super Admin' : 'Admin'} 
             <br/>
             Được tạo lúc 
-            <Moment>{createdAt}</Moment>
+            <Moment parse="YYYY-MM-DD HH:mm">{createdAt}</Moment>
           </p>
         </Box>
       </Modal>
