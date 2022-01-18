@@ -173,7 +173,7 @@ export default function ListClasses() {
                           
                           fullname={row.name}
                          subject={row.subject}
-                         createdAt={new Date(row.createdAt).toLocaleDateString()}
+                         createdAt={new Date(row.createdAt).toLocaleDateString('en-GB')}
                         />
                       </TableCell>
                     </TableRow>
