@@ -44,7 +44,9 @@ export default function AdminManager() {
     if (localStorage && localStorage.getItem("user")) {
       user = JSON.parse(localStorage.getItem("user"));
     }
-    setRole(user.role);
+    if(user){
+      setRole(user.role);
+    }
   };
 
   const fetchCreateAdmin = async (email, password, fullname) => {

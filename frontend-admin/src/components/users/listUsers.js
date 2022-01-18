@@ -75,7 +75,6 @@ export default function ListUsers() {
         res.json().then((result) => {
           if (result) {
             setListUserFilter(result.data);
-            setIsLoaded(true);
           }
         });
       }
@@ -97,9 +96,38 @@ export default function ListUsers() {
     console.log(listUs);
     setListUserFilter(listUs);
   };
+  
+  const banOrUnbanUser = (id, ban) => {
+    const token = takeToken();
+
+    fetch(process.env.REACT_APP_API + "/admin/banOrUnbanUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        id: id,
+        ban: !ban,
+      }),
+    }).then((res) => {
+      if (!res.ok) {
+        setError(true);
+      } else {
+        res.json().then((result) => {
+          if (result) {
+            setIsLoaded(false);
+          }
+        });
+      }
+    });
+  }
+  
   useEffect(() => {
     fetchDataUser();
+    setIsLoaded(true);
   }, [isLoaded]);
+
   return (
     <>
       {error ? (
@@ -185,8 +213,9 @@ export default function ListUsers() {
                           email={row.email}
                           authType={row.authType}
                           fullname={row.fullname}
-                          IDStudent={row.IDStudent}
+                          IDStudent={row.IDstudent}
                         />
+                        <Button sx={{mt: 1}} variant="outlined" onClick={() => banOrUnbanUser(row.id, row.isBan)}>{row.isBan ? "Mở khóa" : "Khóa"}</Button>
                       </TableCell>
                     </TableRow>
                   ))

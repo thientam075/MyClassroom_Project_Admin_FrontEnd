@@ -32,7 +32,7 @@ export default function DetailUser({email, authType, fullname,IDStudent}) {
 
   return (
     <div>
-      <Button onClick={handleOpen}>Chi tiết</Button>
+      <Button variant="outlined" onClick={handleOpen}>Chi tiết</Button>
       <Modal
         open={open}
         onClose={handleClose}
