@@ -10,7 +10,13 @@ import {
   Box,
   Button,
   Container,
+  Paper,
+  IconButton,
+  InputBase,
+  Divider,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+
 import Moment from "react-moment";
 import "moment-timezone";
 import DetailAdmin from "./detailAdmin";
@@ -21,9 +27,10 @@ import moment from "moment";
 export default function AdminManager() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [listAdmin, setListAdmin] = useState([]);
   const [listAdminFilter, setListAdminFilter] = useState([]);
   const [sortList, setSortList] = useState(false);
+  const [keyWords, setKeyWords] = useState("");
+  const [role, setRole] = useState(0);
   const takeToken = () => {
     let token = "";
     if (localStorage.getItem("token")) {
@@ -31,6 +38,13 @@ export default function AdminManager() {
       token = token.slice(0, -1);
     }
     return token;
+  };
+  const takeUser = () => {
+    let user;
+    if (localStorage && localStorage.getItem("user")) {
+      user = JSON.parse(localStorage.getItem("user"));
+    }
+    setRole(user.role);
   };
 
   const fetchCreateAdmin = async (email, password, fullname) => {
@@ -57,7 +71,7 @@ export default function AdminManager() {
     });
   };
   const SortTime = () => {
-    if (listAdmin.length === 0) {
+    if (listAdminFilter.length === 0) {
       return;
     }
     let listAd = listAdminFilter;
@@ -65,20 +79,21 @@ export default function AdminManager() {
       listAd.sort((a, b) => {
         const d1 = moment(a.createdAt);
         const d2 = moment(b.createdAt);
-        
-        const result = d1.isBefore(d2) === true ? 1 : -1;
+
+        const result = d1.isAfter(d2) === true ? 1 : -1;
+
         return result;
       });
     } else {
       listAd.sort((a, b) => {
         const d1 = moment(a.createdAt);
         const d2 = moment(b.createdAt);
-        
-        const result = d1.isAfter(d2) === true ? 1 : -1;
+
+        const result = d1.isBefore(d2) === true ? 1 : -1;
         return result;
       });
     }
-      setListAdminFilter(listAd);
+    setListAdminFilter(listAd);
     setSortList(!sortList);
   };
   const fetchDataAdmin = async () => {
@@ -95,15 +110,31 @@ export default function AdminManager() {
       } else {
         res.json().then((result) => {
           if (result) {
-            setListAdmin(result.data);
-            setIsLoaded(true);
             setListAdminFilter(result.data);
+            setIsLoaded(true);
           }
         });
       }
     });
   };
+  const onSearch = (e) => {
+    e.preventDefault();
+    let listAd = listAdminFilter;
+    listAd = listAd.filter((Ad) => {
+      return (
+        Ad.fullname.toLowerCase().search(keyWords.toLowerCase()) !== -1 ||
+        Ad.email.toLowerCase().search(keyWords.toLowerCase()) !== -1
+      );
+    });
+    console.log(listAd);
+    setListAdminFilter(listAd);
+  };
+  const ResetList = () => {
+    setKeyWords("");
+    setIsLoaded(!isLoaded);
+  };
   useEffect(() => {
+    takeUser();
     fetchDataAdmin();
   }, [isLoaded]);
   return (
@@ -129,7 +160,30 @@ export default function AdminManager() {
             >
               Danh sách các Admin
             </Typography>
-            <ModalAdd fetchCreateAdmin={fetchCreateAdmin} />
+
+            <Paper
+              component="form"
+              sx={{
+                p: "2px 4px",
+                display: "flex",
+                alignItems: "center",
+                width: 400,
+              }}
+              onSubmit={e => onSearch(e)}
+            >
+              <InputBase
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Tìm kiếm Admin"
+                inputProps={{ "aria-label": "Tìm kiếm Admin" }}
+                value = {keyWords}
+                onChange={(e) => setKeyWords(e.target.value)}
+              />
+              <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
+                <SearchIcon />
+              </IconButton>
+            </Paper>
+            <Button onClick={ResetList}>Hủy lọc danh sách</Button>
+            {role === 1 ? (<ModalAdd fetchCreateAdmin={fetchCreateAdmin}/>) :(<></>)}
           </Box>
           <Container>
             <Table size="small">

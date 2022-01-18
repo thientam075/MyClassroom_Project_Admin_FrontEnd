@@ -46,8 +46,10 @@ export default function DetailAdmin({email, role, fullname, createdAt}) {
           <p id="parent-modal-description">
             Với vai trò {role === 1 ? 'Super Admin' : 'Admin'} 
             <br/>
+            <br/>
             Được tạo lúc 
-            <Moment parse="YYYY-MM-DD HH:mm">{createdAt}</Moment>
+            <br/>
+            <Moment>{createdAt}</Moment>
           </p>
         </Box>
       </Modal>

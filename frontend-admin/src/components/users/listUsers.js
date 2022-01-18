@@ -10,7 +10,11 @@ import {
   Box,
   Button,
   Container,
+  IconButton,
+  Paper,
+  InputBase
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import Moment from "react-moment";
 import "moment-timezone";
 import DetailUser from "./detailUser";
@@ -20,9 +24,9 @@ import moment from "moment";
 export default function ListUsers() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [ListUser, setListUser] = useState([]);
   const [ListUserFilter, setListUserFilter] = useState([]);
   const [sortList, setSortList] = useState(false);
+  const [keyWords, setKeyWords] = useState("");
   const takeToken = () => {
     let token = "";
     if (localStorage.getItem("token")) {
@@ -70,13 +74,28 @@ export default function ListUsers() {
       } else {
         res.json().then((result) => {
           if (result) {
-            setListUser(result.data);
             setListUserFilter(result.data);
             setIsLoaded(true);
           }
         });
       }
     });
+  };
+  const ResetList = () => {
+    setKeyWords("");
+    setIsLoaded(!isLoaded);
+  };
+  const onSearch = (e) => {
+    e.preventDefault();
+    let listUs = ListUserFilter;
+    listUs = listUs.filter((Us) => {
+      return (
+        Us.fullname.toLowerCase().search(keyWords.toLowerCase()) !== -1 ||
+        Us.email.toLowerCase().search(keyWords.toLowerCase()) !== -1
+      );
+    });
+    console.log(listUs);
+    setListUserFilter(listUs);
   };
   useEffect(() => {
     fetchDataUser();
@@ -102,8 +121,30 @@ export default function ListUsers() {
               color="primary"
               gutterBottom
             >
-              Danh sách các Admin
+              Danh sách các người dùng
             </Typography>
+            <Paper
+              component="form"
+              sx={{
+                p: "2px 4px",
+                display: "flex",
+                alignItems: "center",
+                width: 400,
+              }}
+              onSubmit={e => onSearch(e)}
+            >
+              <InputBase
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Tìm kiếm người dùng"
+                inputProps={{ "aria-label": "Tìm kiếm người dùng" }}
+                value = {keyWords}
+                onChange={(e) => setKeyWords(e.target.value)}
+              />
+              <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
+                <SearchIcon />
+              </IconButton>
+            </Paper>
+            <Button onClick={ResetList}>Hủy lọc danh sách</Button>
           </Box>
           <Container>
             <Table size="small">
