@@ -44,6 +44,7 @@ export default function AdminManager() {
     if (localStorage && localStorage.getItem("user")) {
       user = JSON.parse(localStorage.getItem("user"));
     }
+    if(user)
     setRole(user.role);
   };
 
